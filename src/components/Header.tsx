@@ -17,10 +17,6 @@ const COMPANIES = [
     name: "LG전자",
     code: "066570",
   },
-  {
-    name: "SK하이닉스",
-    code: "000660",
-  },
 ];
 
 function useIsMobile() {
@@ -187,17 +183,18 @@ const Header: React.FC =
         if (
           company.name ===
           "삼성전자"
-        )
+        ) {
           navigate(
             "/company/삼성전자"
           );
-        else if (
+        } else if (
           company.name ===
           "LG전자"
-        )
+        ) {
           navigate(
             "/company/엘지전자"
           );
+        }
       };
 
     return (
@@ -257,7 +254,11 @@ const Header: React.FC =
                         className="w-full text-left px-4 py-2 hover:bg-gray-100 flex justify-between items-center"
                         onClick={() => {
                           console.log(
-                            "작동 확인"
+                            "Button clicked"
+                          );
+                          console.log(
+                            "Company:",
+                            company
                           );
                           handleCompanyClick(
                             company
