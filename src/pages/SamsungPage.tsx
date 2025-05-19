@@ -131,33 +131,6 @@ const feedback = [
   "심폐지구력(현금흐름)은 **매우 건강한 상태**로, 안정적인 현금 창출 능력을 보유하고 있어 장기적인 성장 잠재력이 있습니다.",
 ];
 
-const notes = [
-  {
-    id: "1",
-    type: "매수" as const,
-    date: "2025-05-10",
-    content:
-      "최근 3년간 ROE가 꾸준히 상승하고 있고, 현금흐름도 안정적이라 장기 투자 가치가 있다고 판단됨. 특히 반도체 사업 부문의 실적 개선이 기대되어 매수 결정.",
-    tags: [
-      "ROE 상승",
-      "안정적 현금흐름",
-      "반도체 사업",
-    ],
-  },
-  {
-    id: "2",
-    type: "홀딩" as const,
-    date: "2025-04-22",
-    content:
-      "1분기 실적 발표 후 주가가 소폭 하락했지만, 전반적인 재무 건강성은 여전히 좋음. 수익성 지표가 소폭 하락했으나 일시적인 현상으로 보이며, 현금 보유량이 충분해 배당 지급 능력도 우수함. 계속 보유하기로 결정.",
-    tags: [
-      "1분기 실적",
-      "배당",
-      "현금 보유량",
-    ],
-  },
-];
-
 const initialNotificationSettings =
   [
     {
@@ -199,6 +172,53 @@ const SamsungPage: React.FC =
     ] = useState(
       initialNotificationSettings
     );
+    const [
+      isFavorite,
+      setIsFavorite,
+    ] = useState(false);
+    const [
+      isNoteModalOpen,
+      setIsNoteModalOpen,
+    ] = useState(false);
+    const [notes, setNotes] =
+      useState<
+        {
+          id: string;
+          type:
+            | "매수"
+            | "매도"
+            | "홀딩";
+          date: string;
+          content: string;
+          tags: string[];
+        }[]
+      >([
+        {
+          id: "1",
+          type: "매수",
+          date: "2025-05-10",
+          content:
+            "최근 3년간 ROE가 꾸준히 상승하고 있고, 현금흐름도 안정적이라 장기 투자 가치가 있다고 판단됨. 특히 반도체 사업 부문의 실적 개선이 기대되어 매수 결정.",
+          tags: [
+            "ROE 상승",
+            "안정적 현금흐름",
+            "반도체 사업",
+          ],
+        },
+        {
+          id: "2",
+          type: "홀딩",
+          date: "2025-04-22",
+          content:
+            "1분기 실적 발표 후 주가가 소폭 하락했지만, 전반적인 재무 건강성은 여전히 좋음. 수익성 지표가 소폭 하락했으나 일시적인 현상으로 보이며, 현금 보유량이 충분해 배당 지급 능력도 우수함. 계속 보유하기로 결정.",
+          tags: [
+            "1분기 실적",
+            "배당",
+            "현금 보유량",
+          ],
+        },
+      ]);
+
     const handleNotificationToggle =
       (id: string) => {
         setNotificationSettings(
@@ -215,6 +235,39 @@ const SamsungPage: React.FC =
             )
         );
       };
+
+    const handleFavoriteToggle =
+      () => {
+        setIsFavorite(
+          (prev) => !prev
+        );
+      };
+
+    const handleAddNote =
+      (newNote: {
+        type:
+          | "매수"
+          | "매도"
+          | "홀딩";
+        content: string;
+        tags: string[];
+      }) => {
+        const note = {
+          id: Date.now().toString(),
+          date: new Date()
+            .toISOString()
+            .split("T")[0],
+          ...newNote,
+        };
+        setNotes((prev) => [
+          note,
+          ...prev,
+        ]);
+        setIsNoteModalOpen(
+          true
+        );
+      };
+
     return (
       <main className="container mx-auto px-4 py-6 pb-20 flex-1">
         <CompanyHeader
@@ -224,6 +277,17 @@ const SamsungPage: React.FC =
           price={72300}
           change={1200}
           changePercent={1.7}
+          isFavorite={
+            isFavorite
+          }
+          onFavoriteToggle={
+            handleFavoriteToggle
+          }
+          onAddNote={() =>
+            setIsNoteModalOpen(
+              true
+            )
+          }
         />
         <div className="space-y-4 sm:space-y-6">
           <HealthProfile
@@ -238,6 +302,17 @@ const SamsungPage: React.FC =
           />
           <InvestmentNotes
             notes={notes}
+            isModalOpen={
+              isNoteModalOpen
+            }
+            onCloseModal={() =>
+              setIsNoteModalOpen(
+                false
+              )
+            }
+            onAddNote={
+              handleAddNote
+            }
           />
           <NotificationSettings
             settings={

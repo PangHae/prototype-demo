@@ -131,21 +131,6 @@ const feedback = [
   "최근 신사업 부문에서의 성과가 두드러집니다.",
 ];
 
-const notes = [
-  {
-    id: "1",
-    type: "매수" as const,
-    date: "2025-05-12",
-    content:
-      "가전 부문 실적 호조와 전장사업 성장 기대감으로 매수 결정.",
-    tags: [
-      "가전 호조",
-      "전장사업",
-      "성장성",
-    ],
-  },
-];
-
 const initialNotificationSettings =
   [
     {
@@ -187,6 +172,41 @@ const LGPage: React.FC =
     ] = useState(
       initialNotificationSettings
     );
+    const [
+      isFavorite,
+      setIsFavorite,
+    ] = useState(false);
+    const [
+      isNoteModalOpen,
+      setIsNoteModalOpen,
+    ] = useState(false);
+    const [notes, setNotes] =
+      useState<
+        {
+          id: string;
+          type:
+            | "매수"
+            | "매도"
+            | "홀딩";
+          date: string;
+          content: string;
+          tags: string[];
+        }[]
+      >([
+        {
+          id: "1",
+          type: "매수",
+          date: "2025-05-12",
+          content:
+            "가전 부문 실적 호조와 전장사업 성장 기대감으로 매수 결정.",
+          tags: [
+            "가전 호조",
+            "전장사업",
+            "성장성",
+          ],
+        },
+      ]);
+
     const handleNotificationToggle =
       (id: string) => {
         setNotificationSettings(
@@ -203,6 +223,39 @@ const LGPage: React.FC =
             )
         );
       };
+
+    const handleFavoriteToggle =
+      () => {
+        setIsFavorite(
+          (prev) => !prev
+        );
+      };
+
+    const handleAddNote =
+      (newNote: {
+        type:
+          | "매수"
+          | "매도"
+          | "홀딩";
+        content: string;
+        tags: string[];
+      }) => {
+        const note = {
+          id: Date.now().toString(),
+          date: new Date()
+            .toISOString()
+            .split("T")[0],
+          ...newNote,
+        };
+        setNotes((prev) => [
+          note,
+          ...prev,
+        ]);
+        setIsNoteModalOpen(
+          true
+        );
+      };
+
     return (
       <main className="container mx-auto px-4 py-6 pb-20 flex-1">
         <CompanyHeader
@@ -213,6 +266,17 @@ const LGPage: React.FC =
           change={-500}
           changePercent={
             -0.45
+          }
+          isFavorite={
+            isFavorite
+          }
+          onFavoriteToggle={
+            handleFavoriteToggle
+          }
+          onAddNote={() =>
+            setIsNoteModalOpen(
+              true
+            )
           }
         />
         <div className="space-y-4 sm:space-y-6">
@@ -228,6 +292,17 @@ const LGPage: React.FC =
           />
           <InvestmentNotes
             notes={notes}
+            isModalOpen={
+              isNoteModalOpen
+            }
+            onCloseModal={() =>
+              setIsNoteModalOpen(
+                false
+              )
+            }
+            onAddNote={
+              handleAddNote
+            }
           />
           <NotificationSettings
             settings={
